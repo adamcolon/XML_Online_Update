@@ -10,10 +10,10 @@ if(!empty($argv[1])){
 
 function main($filename){
 	$db_settings = array(
-		'host' => 'localhost'
-		,'db_name' => 'mirror_test'
-		,'user' => 'mirror'
-		,'password' => 'm1rr0r!'
+		'host' => 'mysql.adamcolon.com'
+		,'db_name' => 'adc_test'
+		,'user' => 'adamc_test'
+		,'password' => 'adctest01'
 	);
 	
 	$onlineUpdateFeed = new OnlineUpdateFeed($db_settings, $filename);
@@ -26,6 +26,8 @@ class OnlineUpdateFeed {
 	var $offline_list = array();
 	
 	function __construct($db_settings, $filename){
+		if(DEBUG) echo "[".__METHOD__."] Running.\n";
+		
 		$this->db = new DataSource($db_settings) or ErrorHandler::raise(__METHOD__.' ['.__LINE__."] Failed To Connect to Databse.", true);
 		
 		if(!file_exists($filename)) ErrorHandler::raise(__METHOD__.' ['.__LINE__."] XML File Does Not Exist [{$filename}]", true);
@@ -35,6 +37,8 @@ class OnlineUpdateFeed {
 	}
 	
 	function parseXml($filename){
+		if(DEBUG) echo "[".__METHOD__."] Running.\n";
+		
 		$this->feed_type = 'delta|full';
 		$this->online_list = array();
 		$this->offline_list = array();
@@ -43,6 +47,8 @@ class OnlineUpdateFeed {
 	}
 	
 	function updateState(){
+		if(DEBUG) echo "[".__METHOD__."] Running.\n";
+		
 		if($this->feed_type == 'full'){
 			$this->clearState();
 			$this->makeOnline($this->online_list);
@@ -57,14 +63,18 @@ class OnlineUpdateFeed {
 	}
 	
 	function clearState(){
-		$sql = "DELETE FROM `online`;";
+		if(DEBUG) echo "[".__METHOD__."] Running.\n";
+		
+		$sql = "DELETE FROM `users_online`;";
 		$this->db->Execute($sql);
 		
-		$sql = "DELETE FROM `offline`;";
+		$sql = "DELETE FROM `users_offline`;";
 		$this->db->Execute($sql);
 	}
 	
 	function makeOnline($user_list, $validate_state = false){
+		if(DEBUG) echo "[".__METHOD__."] Running.\n";
+		
 		if(!empty($user_list)){
 			if($validate_state){
 				foreach($user_list as $user){
@@ -73,12 +83,14 @@ class OnlineUpdateFeed {
 				}
 			}
 			
-			$this->insertState('online', $user_list);
-			$this->removeState('offline', $user_list);
+			$this->insertState('users_online', $user_list);
+			$this->removeState('users_offline', $user_list);
 		}
 	}
 
 	function makeOffline($user_list, $validate_state = false){
+		if(DEBUG) echo "[".__METHOD__."] Running.\n";
+		
 		if(!empty($user_list)){
 			if($validate_state){
 				foreach($user_list as $user){
@@ -87,12 +99,14 @@ class OnlineUpdateFeed {
 				}
 			}
 			
-			$this->insertState('offline', $user_list);
-			$this->removeState('online', $user_list);
+			$this->insertState('users_offline', $user_list);
+			$this->removeState('users_online', $user_list);
 		}
 	}
 	
 	function insertState($table, $user_list){
+		if(DEBUG) echo "[".__METHOD__."] Running.\n";
+		
 		if(!empty($user_list)){
 			$values = '('.implode('),(', $user_list).')';
 			$sql = "REPLACE INTO `{$table}` (`user_id`) VALUES {$values};";
@@ -103,6 +117,8 @@ class OnlineUpdateFeed {
 	}
 	
 	function removeState($table, $user_list){
+		if(DEBUG) echo "[".__METHOD__."] Running.\n";
+		
 		if(!empty($user_list)){
 			$count = count($user_list);
 			$id_list = implode(',', $user_list);
@@ -122,24 +138,29 @@ class DataSource{
 	var $connection = null;
 
 	function __construct($db_settings){
+		if(DEBUG) echo "[".__METHOD__."] Entered.\n";
+		
 		$this->host = $db_settings['host'];
 		$this->db_name = $db_settings['db_name'];
 		$this->user = $db_settings['user'];
 		$this->password = $db_settings['password'];
 
 		$this->connection = mysql_connect($this->host, $this->user, $this->password) or ErrorHandler::raise('Could not connect: ' . mysql_error($this->connection));
-		if(DEBUG) echo __METHOD__." connected to {$this->host}.<br/>";
+		if(DEBUG) echo "[".__METHOD__."] connected to {$this->host}.\n";
 
 		mysql_select_db($this->db_name, $this->connection) or ErrorHandler::raise("Could not select database [{$this->db_name}]". mysql_error($this->connection), true);
-		if(DEBUG) echo __METHOD__." Database Selected: {$this->db_name}.<br/>";
+		if(DEBUG) echo "[".__METHOD__."] Database Selected: {$this->db_name}.\n";
 	}
 
 	function __destruct(){
+		if(DEBUG) echo "[".__METHOD__."] Running.\n";
+		
 		if($this->connection) mysql_close($this->connection);
 	}
 
 	function Query($sql){
-		if(DEBUG) echo __METHOD__." Running: {$sql}.<br/>";
+		if(DEBUG) echo "[".__METHOD__."] Running {$sql}.\n";
+		
 		$dataset = array();
 
 		mysql_select_db($this->db_name, $this->connection) or ErrorHandler::raise("Could not select database [{$this->db_name}]". mysql_error($this->connection), true);
@@ -148,17 +169,17 @@ class DataSource{
 			$dataset[] = $rs;
 		}
 
-		if(DEBUG) echo __METHOD__." Results:".print_r($dataset, true)."<br/>";
+		if(DEBUG) echo "[".__METHOD__."] Results: ".print_r($dataset, true)."\n";
 		return $dataset;
 	}
 
 	function Execute($sql){
-		if(DEBUG) echo __METHOD__." Running: {$sql}<br/>.";
+		if(DEBUG) echo "[".__METHOD__."] Running {$sql}\n.";
 
 		mysql_select_db($this->db_name, $this->connection) or ErrorHandler::raise("Could not select database [{$this->db_name}]". mysql_error($this->connection), true);
 		$result = mysql_query($sql, $this->connection) or ErrorHandler::raise('['.__METHOD__.'::'.__LINE__.'] Query failed: ' . mysql_error($this->connection), true);
 
-		if(DEBUG) echo __METHOD__." Last Inserted Id: ".mysql_insert_id($this->connection).", Rows Affected:".mysql_affected_rows($this->connection)."<br/>";
+		if(DEBUG) echo "[".__METHOD__."] Last Inserted Id: ".mysql_insert_id($this->connection).", Rows Affected:".mysql_affected_rows($this->connection)."\n";
 		return array('id'=>mysql_insert_id($this->connection), 'rows_affected'=>mysql_affected_rows($this->connection));
 	}
 

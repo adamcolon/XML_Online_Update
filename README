@@ -1,0 +1,16 @@
+README
+
+The testfeed.xml file is a sample output feed we receive from one of our vendors.  Write a code that will read/parse the xml file and output the list of userids who are currently online in the system.
+
+XML attributes:
+presence type 
+	'd' for delta - the list of users who either logged off or logged on since last check/query
+	'f' for full, meaning a list of all users who are currently logged on
+on - list of online users
+off - list of offline users
+u - userid
+
+Constraints: you can only use PHP4 xml functions (can't use SimpleXML, etc as they're PHP5)
+Challenge: Consider how you get full lists when you get 'f' and changes if 'd'.  How would you sync your records to ensure that you remove those that log off and insert those who recently log in?
+
+Good luck!

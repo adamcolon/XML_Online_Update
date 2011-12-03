@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE presence PUBLIC "-//Userplane//DTD presence 1.0" "http://feed.presence.userplane.com/presence/p.dtd">
+<presence type="d">
+	<on>
+		<u>294052</u>
+		<u>53761</u>
+		<u>335633</u>
+	</on>
+	<off>
+		<u>304125</u>
+	</off>
+</presence>

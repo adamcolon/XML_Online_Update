@@ -1,11 +1,11 @@
 <?php
 define('DEBUG', true);
 
-if(!empty($argv[0])){
-	$filename = $argv[0];
+if(!empty($argv[1])){
+	$filename = $argv[1];
 	main($filename);
 }else{
-	die("usage".__FILE__." <full_path_to_xml_file>\n");
+	die("usage: ".__FILE__." <full_path_to_xml_file>\n");
 }
 
 function main($filename){
@@ -57,10 +57,10 @@ class OnlineUpdateFeed {
 	}
 	
 	function clearState(){
-		$sql = "DELETE FROM `online`;"
+		$sql = "DELETE FROM `online`;";
 		$this->db->Execute($sql);
 		
-		$sql = "DELETE FROM `offline`;"
+		$sql = "DELETE FROM `offline`;";
 		$this->db->Execute($sql);
 	}
 	
@@ -95,7 +95,7 @@ class OnlineUpdateFeed {
 	function insertState($table, $user_list){
 		if(!empty($user_list)){
 			$values = '('.implode('),(', $user_list).')';
-			$sql = "REPLACE INTO `{$table}` (`user_id`) VALUES {$values};"
+			$sql = "REPLACE INTO `{$table}` (`user_id`) VALUES {$values};";
 
 			$result = $this->db->Execute($sql);
 			return $result['rows_affected'];
@@ -143,7 +143,7 @@ class DataSource{
 		$dataset = array();
 
 		mysql_select_db($this->db_name, $this->connection) or ErrorHandler::raise("Could not select database [{$this->db_name}]". mysql_error($this->connection), true);
-		$result = mysql_query($sql, $this->connection) or ErrorHandler::raise(('['.__METHOD__.'::'.__LINE__.'] Query failed: ' . mysql_error($this->connection), true);
+		$result = mysql_query($sql, $this->connection) or ErrorHandler::raise('['.__METHOD__.'::'.__LINE__.'] Query failed: ' . mysql_error($this->connection), true);
 		while($rs = mysql_fetch_array($result, MYSQL_ASSOC)){
 			$dataset[] = $rs;
 		}
@@ -172,14 +172,16 @@ class DataSource{
 }
 
 class ErrorHandler{
-	public static $log_file = dirname(__FILE__).'/error.log';
+	public static $log_file = 'error.log';
 	
 	public static function raise($message, $break = false){
 		echo "{$message}\n";
+		
+		$message = "[".date('Y-m-d H:i:s')."] {$message}";
 		if(file_put_contents(self::$log_file, $message) === false){
 			echo "!* Failed to Write Error to Log [".self::$log_file."]\n";
 		}
-		if($break) die($message);
+		if($break) die();
 	}
 }
 ?>

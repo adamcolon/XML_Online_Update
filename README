@@ -1,5 +1,5 @@
-README
-
+Specification
+----------
 The testfeed.xml file is a sample output feed we receive from one of our vendors.  Write a code that will read/parse the xml file and output the list of userids who are currently online in the system.
 
 XML attributes:
@@ -12,5 +12,14 @@ u - userid
 
 Constraints: you can only use PHP4 xml functions (can't use SimpleXML, etc as they're PHP5)
 Challenge: Consider how you get full lists when you get 'f' and changes if 'd'.  How would you sync your records to ensure that you remove those that log off and insert those who recently log in?
+----------
 
-Good luck!
+
+Usage
+----------
+php runOnlineUpdate.php testfeed_d.xml
+php runOnlineUpdate.php testfeed_f.xml
+
+All errors and warnings get written to the error.log but i'm .gitignore'ing that so it's not checked in.
+Right now DEBUG is on in online_update_feed.php, so all the debug output is going to be displayed.
+If you set DEBUG to false, only the online user_id's will get outputed except when their is a failure to write to the error.log file.

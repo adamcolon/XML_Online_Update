@@ -1,4 +1,6 @@
 <?php
+if (!defined('ENTRYPOINT')) die("Cannot Be Called Directly\n");
+
 if(!defined('DEBUG')) define('DEBUG', false);	// For verbose output, set this to true
 
 /**

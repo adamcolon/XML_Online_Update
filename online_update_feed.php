@@ -1,4 +1,6 @@
 <?php 
+if (!defined('ENTRYPOINT')) die("Cannot Be Called Directly\n");
+
 if(!defined('DEBUG')) define('DEBUG', true);	// For verbose output, set this to true
 
 require_once('error_handler.php');

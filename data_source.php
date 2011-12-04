@@ -75,7 +75,7 @@ class DataSource{
 	 * @return array('id'=><last inserted id>, 'rows_affected'=><number of rows affected>)
 	 */
 	function Execute($sql){
-		if(DEBUG) echo "[".__METHOD__."] Running {$sql}\n.";
+		if(DEBUG) echo "[".__METHOD__."] Running {$sql}.\n";
 
 		mysql_select_db($this->db_name, $this->connection) or ErrorHandler::raise("Could not select database [{$this->db_name}]". mysql_error($this->connection), true);
 		$result = mysql_query($sql, $this->connection) or ErrorHandler::raise('['.__METHOD__.'::'.__LINE__.'] Query failed: ' . mysql_error($this->connection), true);

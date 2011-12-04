@@ -18,7 +18,9 @@ function main($filename){
 	
 	$onlineUpdateFeed = new OnlineUpdateFeed($db_settings, $filename);	// Instantiate
 	$onlineUpdateFeed->updateState();	// Act on Data
+	
 	if($user_list = $onlineUpdateFeed->getOnlineUsers()){	// Print out online users
+		if(defined('DEBUG') && DEBUG) echo "Debug is ON.\n-----Results-----\n";
 		foreach($user_list as $user_id){
 			echo "{$user_id}\n";
 		}

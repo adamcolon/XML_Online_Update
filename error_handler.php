@@ -1,4 +1,6 @@
 <?php
+if(!defined('DEBUG')) define('DEBUG', false);	// For verbose output, set this to true
+
 /**
  * ErrorHandler Class
  * This is a simple error handler
@@ -18,10 +20,10 @@ class ErrorHandler{
 	 * @param bool $break
 	 */
 	public static function raise($message, $break = false){
-		echo "{$message}\n";
+		if(DEBUG) echo "{$message}\n";
 		
-		$message = "[".date('Y-m-d H:i:s')."] {$message}";
-		if(file_put_contents(self::$log_file, $message) === false){
+		$message = "[".date('Y-m-d H:i:s')."] {$message}\n";
+		if(file_put_contents(self::$log_file, $message, FILE_APPEND) === false){
 			echo "!* Failed to Write Error to Log [".self::$log_file."]\n";
 		}
 		if($break) die();

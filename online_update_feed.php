@@ -141,9 +141,9 @@ class OnlineUpdateFeed {
 		
 		if(!empty($user_list)){
 			if($validate_state){
-				foreach($user_list as $user){
-					//if no offline record or online record exists, spit out a non-critical error
-					//ErrorHandler::raise($message);
+				foreach($user_list as $user_id){
+					if($this->inStateList('users_online', $user_id)) ErrorHandler::raise("User Already Found Online [{$user_id}]");
+					if(!$this->inStateList('users_offline', $user_id)) ErrorHandler::raise("User Not Previously Offline [{$user_id}]");
 				}
 			}
 			
@@ -163,9 +163,9 @@ class OnlineUpdateFeed {
 		
 		if(!empty($user_list)){
 			if($validate_state){
-				foreach($user_list as $user){
-					//if no online record or offline record exists, spit out a non-critical error
-					//ErrorHandler::raise($message);
+				foreach($user_list as $user_id){
+					if($this->inStateList('users_offline', $user_id)) ErrorHandler::raise("User Already Found Offline [{$user_id}]");
+					if(!$this->inStateList('users_online', $user_id)) ErrorHandler::raise("User Not Previously Online [{$user_id}]");
 				}
 			}
 			
@@ -227,6 +227,20 @@ class OnlineUpdateFeed {
 		}
 		
 		return $user_list;
+	}
+	
+	/**
+	 * 
+	 * return whether the given user_id is in the specified table
+	 * @param string $table
+	 * @param int $user_id
+	 * @return boolean
+	 */
+	function inStateList($table, $user_id){
+		$sql = "SELECT * FROM `{$table}` WHERE user_id={$user_id};";
+		if($this->db->query($sql)){
+			return true;
+		}
 	}
 }
 
